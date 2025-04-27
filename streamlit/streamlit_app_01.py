@@ -7,9 +7,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Correct way: create actual tab objects
-tab1, tab2 = st.tabs(['IDA', 'EDA'])
+tab1, tab2, tab3 = st.tabs(['IDA', 'EDA','Feature Selection'])
 
-
+with tab3:
+    st.header("Feature Selection")
 
 
 
