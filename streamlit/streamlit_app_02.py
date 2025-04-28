@@ -1,9 +1,7 @@
 import streamlit as st
+import base64
 
-st.set_page_config(page_title="Higgs Boson Detection")
-
-# Sidebar for navigation
-import streamlit as st
+st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 
 st.sidebar.title("Navigate")
 page = st.sidebar.radio(
@@ -18,28 +16,53 @@ page = st.sidebar.radio(
     ]
 )
 
+
+# Set background image or color dynamically based on the page
+def set_background(image_path):
+    with open(image_path, "rb") as image_file:
+        base64_image = base64.b64encode(image_file.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{base64_image}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 # Home Page
 if page == "Home":
-    st.title("Higgs Boson (God Particle) Detection")
-    st.write("""
-    This project focuses on detecting the presence of the Higgs Boson particle using machine learning models.
-    The dataset used is from the [Higgs UCI Dataset](https://www.kaggle.com/datasets/erikbiswas/higgs-uci-dataset).
 
-    You will explore particle properties and predict if an event is a signal (Higgs) or background (noise).
-    """)
+    set_background(image_path='data/pic2.jpg')
+
+    st.title("Higgs Boson (God Particle) Detection")
 
 # Instructions Page
 elif page == "Instructions":
-    st.title("Instructions")
     st.write("""
-    1. Load the dataset.
-    2. Select a machine learning model (like Random Forest or XGBoost).
-    3. Train the model on the features.
-    4. Predict whether a particle event is Higgs Boson or background.
-    5. Evaluate the model's performance.
+    ### About the Project:
+    This Project is your ultimate companion for exploring the Higgs Boson particle, offering insights through interactive visualizations, scientific explanations, and predictive models.
 
-    Keep an eye on metrics like accuracy, precision, and recall!
+    ### Sections:
+    
+    - **What is Higgs Boson?:** Discover the scientific significance of the Higgs Boson and its role in particle physics.
+    
+    - **Predict the Particle:** Run predictions on particle data to determine the presence of the Higgs Boson using a trained model.
+    
+    - **Documentation:** Dive into the technical details, data sources, and methodologies used in the model.
+    
+    - **Feedback:** Share your thoughts and suggestions to help improve the Project experience.
+    
+    - **Home:** Overview of the Higgs Boson Project and what you can explore.
+
+    Navigate the Project using the sidebar, and immerse yourself in the exciting world of particle physics!
     """)
+
+
 
 # What is Higgs Boson Page
 elif page == "What is Higgs Boson?":
