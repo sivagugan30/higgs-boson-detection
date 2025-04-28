@@ -11,9 +11,53 @@ tab1, tab2, tab3 = st.tabs(['IDA', 'EDA','Feature Selection'])
 
 with tab3:
     st.header("Feature Selection")
+    # Now, inside Tab 3 - 4 spaces indentation continues!
 
+    # Load Cleaned Data
+    file_path = 'data/stratified_dataset_cleaned.csv'
+    df = pd.read_csv(file_path)
 
+    # Drop Target Variable
+    features_only = df.drop(columns=['Label'])
 
+    # Compute Pearson Correlation Matrix
+    corr_matrix = features_only.corr()
+
+    # Plot Correlation Heatmap
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    fig_corr, ax = plt.subplots(figsize=(16, 12))
+    sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', center=0, square=True)
+    ax.set_title('Pearson Correlation Heatmap of Features', fontsize=16)
+    st.pyplot(fig_corr)
+
+    # Top N Correlation Pairs - Dynamic
+    top_n = st.slider("Select number of top correlated pairs to display:", min_value=5, max_value=30, value=10, step=1)
+
+    # Flatten Correlation Table
+    corr_table = (
+        corr_matrix.stack()
+        .reset_index()
+        .rename(columns={'level_0': 'Feature 1', 'level_1': 'Feature 2', 0: 'Correlation'})
+    )
+    corr_table = corr_table[corr_table['Feature 1'] != corr_table['Feature 2']]
+    corr_table['abs_corr'] = corr_table['Correlation'].abs()
+    top_corr = corr_table.sort_values(by='abs_corr', ascending=False).head(top_n)
+
+    # Horizontal Bar Plot for Top N
+    fig_bar, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(
+        x='abs_corr',
+        y=top_corr['Feature 1'] + " & " + top_corr['Feature 2'],
+        data=top_corr,
+        palette='coolwarm'
+    )
+    ax.set_xlabel('Absolute Correlation')
+    ax.set_ylabel('Feature Pairs')
+    ax.set_title(f'Top {top_n} Most Highly Correlated Feature Pairs', fontsize=16)
+    ax.set_xlim(0.0, 1.0)
+    st.pyplot(fig_bar)
 
 
 
