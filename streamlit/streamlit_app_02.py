@@ -53,7 +53,7 @@ elif page == "What is Higgs Boson?":
     """)
 
 # Predict Higgs Boson Page
-elif page == "Predict Higgs Boson":
+elif page == "Predict the Particle":
     st.title("Predict Higgs Boson")
     st.write(
         """
