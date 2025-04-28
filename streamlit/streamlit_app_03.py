@@ -127,3 +127,67 @@ elif page == "Higgs Boson Detector":
             st.success(f"Prediction using **{model_choice}**: 🚀 **Signal (Higgs Boson)** Detected!")
         else:
             st.error(f"Prediction using **{model_choice}**: ❌ **Background** Event Detected.")
+
+        import shap
+        import matplotlib.pyplot as plt
+        import streamlit.components.v1 as components
+
+
+        # Function to render SHAP plots in Streamlit
+        def st_shap(plot, height=None):
+            shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
+            components.html(shap_html, height=height)
+
+
+        # Background data
+        X_background = data.drop(columns=['Label'])
+        features = X_background.columns.to_list()
+
+        label_names = ["Background", "Signal"]
+        st.header("Model Explanations")
+
+        if model_choice == "Random Forest" or model_choice == "XGBoost":
+            st.subheader("Heading")
+            from sklearn.tree import plot_tree
+            model = joblib.load('E:/higgs-boson-detection/data/tree_basic.pkl')
+            individual_tree = model.estimators_[0]
+            fig, ax = plt.subplots(figsize=(16, 10))
+            plot_tree(individual_tree, feature_names=features, class_names=label_names, filled=True, ax=ax)
+            st.pyplot(fig)
+
+        elif model_choice == "Logistic Regression":
+            st.subheader("Feature Impact on the Prediction (SHAP Linear Explainer)")
+
+            # Create a Linear Explainer for Logistic Regression
+            explainer = shap.LinearExplainer(model, X_background, feature_perturbation="interventional")
+
+            # Calculate SHAP values
+            shap_values = explainer.shap_values(final_input)
+
+            # Create SHAP Explanation object for waterfall
+            explanation = shap.Explanation(
+                values=shap_values[0],
+                base_values=explainer.expected_value,
+                data=final_input.flatten(),
+                feature_names=X_background.columns
+            )
+
+            # Force plot
+            st_shap(shap.force_plot(
+                explainer.expected_value,
+                shap_values[0],
+                feature_names=X_background.columns
+            ))
+
+            st.subheader("Waterfall Plot (Detailed Feature Contributions)")
+            fig, ax = plt.subplots()
+            shap.plots.waterfall(explanation, show=False)
+            st.pyplot(fig)
+
+        elif model_choice == "Support Vector Machine":
+            st.warning("SHAP is computationally expensive for SVM. Skipping explanation.")
+        else:
+            st.warning("SHAP not available for this model type.")
+
+
+
