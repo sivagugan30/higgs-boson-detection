@@ -87,7 +87,7 @@ elif page == "Predict the Particle":
 
 # Documentation Page
 elif page == "Documentation":
-    st.title("Documentation")
+    st.title("Model Evaluation")
     st.write(
         """
         - **Dataset**: Higgs UCI Dataset from Kaggle  
@@ -95,6 +95,41 @@ elif page == "Documentation":
         - **Model**: Machine Learning based classifier.
         """
     )
+
+    import pandas as pd
+    import plotly.graph_objects as go
+
+    # Load the metrics from the CSV file
+    df_metrics = pd.read_csv('data/model_metrics.csv', index_col=0)
+
+    # List of model names
+    model_names = df_metrics.columns.tolist()
+
+    # Create radar plots
+    fig = go.Figure()
+
+    # Add traces for each model
+    for model in model_names:
+        fig.add_trace(go.Scatterpolar(
+            r=df_metrics[model].values,
+            theta=df_metrics.index.tolist(),
+            fill='toself',
+            name=model,
+            marker=dict(size=8)
+        ))
+
+    # Update the layout for the radar plot
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0.6, 1]),  # Metrics are scaled between 0.6 and 1
+        ),
+        showlegend=True,
+        template='plotly_dark',
+        title="Model Comparison: Logistic Regression vs Other ML Models"
+    )
+
+    # Show the plot
+    fig.show()
 
 elif page == "Feedback":
     st.title("Feedback")
