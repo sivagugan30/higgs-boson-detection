@@ -50,9 +50,10 @@ selected_features = [
 #os.chdir("/Users/sivaguganjayachandran/PycharmProjects/higgs-boson-detection/")
 
 os.chdir("..")
+
 st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 
-#st.write(os.getcwd())
+st.write(os.getcwd())
 
 
 conf_matrix_df = pd.read_csv('data/confusion_matrices.csv')
