@@ -3,6 +3,7 @@ import base64
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
+import ast
 
 st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 
@@ -18,7 +19,6 @@ page = st.sidebar.radio(
         "Feedback"
     ]
 )
-
 
 # Set background image or color dynamically based on the page
 def set_background(image_path):
@@ -96,7 +96,7 @@ elif page == "Documentation":
     # List of model names
     model_names = df_metrics.columns.tolist()
 
-    st.header("📄 Documentation: Model Comparison")
+    st.header("Model Comparison")
 
     # 1. Baseline Model (Dropdown)
     baseline_model = st.selectbox("Select Baseline Model:", options=model_names,
@@ -106,7 +106,12 @@ elif page == "Documentation":
     novel_model_options = [model for model in model_names if model != baseline_model]
     novel_model = st.radio("Select Novel Model to Compare:", options=novel_model_options)
 
-    st.markdown(f"**Comparing `{novel_model}` against `{baseline_model}`**")
+    st.markdown(
+        f"<p style='font-size: 18px; text-align: center;'>"
+        f"<span style='color: rgba(0, 123, 255, 1);'>{baseline_model}</span>    vs    "
+        f"<span style='color: rgba(158, 42, 47, 1);'>{novel_model}</span></p>",
+        unsafe_allow_html=True
+    )
 
     # Plot Radar Chart comparing the two models
     metrics = df_metrics.index.tolist()
@@ -121,7 +126,7 @@ elif page == "Documentation":
         theta=metrics,
         fill='toself',
         name=baseline_model,
-        marker=dict(size=8, color='rgba(0, 76, 153, 0.8)')
+        marker=dict(size=8, color='rgba(0, 0, 255, 1)')
     ))
 
     fig.add_trace(go.Scatterpolar(
@@ -129,7 +134,7 @@ elif page == "Documentation":
         theta=metrics,
         fill='toself',
         name=novel_model,
-        marker=dict(size=8, color='rgba(204, 0, 0, 0.8)')
+        marker=dict(size=8, color='rgba(200, 0, 0, 0.5)')
     ))
 
     fig.update_layout(
@@ -138,10 +143,66 @@ elif page == "Documentation":
         ),
         showlegend=True,
         template='plotly_dark',
-        title=f"Model Comparison: {baseline_model} vs {novel_model}"
+        title=f"Model Performance Metrics"
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+    # ---- Load ROC Curve Data from CSV ----
+    roc_df = pd.read_csv('data/roc_curves.csv')
+
+    # Convert FPR and TPR columns from string to list
+    roc_df['FPR'] = roc_df['FPR'].apply(ast.literal_eval)
+    roc_df['TPR'] = roc_df['TPR'].apply(ast.literal_eval)
+
+    # Create a Plotly figure for ROC curves
+    fig_roc = go.Figure()
+
+    # Filter for baseline and novel model data
+    baseline_df = roc_df[roc_df['Model'] == baseline_model]
+    novel_df = roc_df[roc_df['Model'] == novel_model]
+
+    # Plot baseline model in blue
+    fpr_baseline = baseline_df['FPR'].values[0]
+    tpr_baseline = baseline_df['TPR'].values[0]
+    fig_roc.add_trace(go.Scatter(
+        x=fpr_baseline, y=tpr_baseline,
+        mode='lines+markers',
+        name=baseline_model,
+        line=dict(color='rgba(0, 0, 255, 1)', width=3),
+    ))
+
+    # Plot novel model in red
+    fpr_novel = novel_df['FPR'].values[0]
+    tpr_novel = novel_df['TPR'].values[0]
+    fig_roc.add_trace(go.Scatter(
+        x=fpr_novel, y=tpr_novel,
+        mode='lines+markers',
+        name=novel_model,
+        line=dict(color='rgba(200, 0, 0, 1)', width=3),
+    ))
+
+    # Add the diagonal line for random guessing (FPR = TPR)
+    fig_roc.add_trace(go.Scatter(
+        x=[0, 1], y=[0, 1],
+        mode='lines',
+        line=dict(color='gray', dash='dash'),
+        showlegend=False
+    ))
+
+    # Update layout of the plot
+    fig_roc.update_layout(
+        template='plotly_dark',
+        title="ROC Curve Comparison",
+        xaxis_title="False Positive Rate",
+        yaxis_title="True Positive Rate",
+        width=800,
+        height=600,
+        showlegend=True
+    )
+
+    # Show the ROC curve plot in Streamlit
+    st.plotly_chart(fig_roc, use_container_width=True)
 
     # ---- CONFUSION MATRICES ----
     conf_matrix_df = pd.read_csv('data/confusion_matrices.csv')
@@ -175,9 +236,23 @@ elif page == "Documentation":
     )
 
     # Update layout for dark mode
-    fig_baseline.update_layout(template="plotly_dark", title=f"{baseline_model} Confusion Matrix")
-    fig_novel.update_layout(template="plotly_dark", title=f"{novel_model} Confusion Matrix")
+    fig_baseline.update_layout(
+        template="plotly_dark",
+        title=f"{baseline_model}",
+        title_font=dict(weight='normal'),
+        title_font_size=12,
+        title_x=0.4  # Centers the title
+    )
 
+    fig_novel.update_layout(
+        template="plotly_dark",
+        title=f"{novel_model}",
+        title_font=dict(weight='normal'),
+        title_font_size=12,
+        title_x=0.4  # Centers the title
+    )
+
+    st.markdown("##### Confusion Matrix")
     # Display plots side by side
     col1, col2 = st.columns(2)
 
@@ -186,6 +261,7 @@ elif page == "Documentation":
 
     with col2:
         st.plotly_chart(fig_novel, use_container_width=True)
+
 
 elif page == "Feedback":
     st.title("Feedback")

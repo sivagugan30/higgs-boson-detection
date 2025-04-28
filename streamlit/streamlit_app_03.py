@@ -144,7 +144,7 @@ elif page == "Higgs Boson Detector":
         features = X_background.columns.to_list()
 
         label_names = ["Background", "Signal"]
-        st.header("Model Explanations")
+        #st.header("Model Explanations")
 
         if model_choice == "Random Forest" or model_choice == "XGBoost":
             st.subheader("Heading")
@@ -156,7 +156,7 @@ elif page == "Higgs Boson Detector":
             st.pyplot(fig)
 
         elif model_choice == "Logistic Regression":
-            st.subheader("Feature Impact on the Prediction (SHAP Linear Explainer)")
+            st.subheader("Feature Impact (SHAP Analysis)")
 
             # Create a Linear Explainer for Logistic Regression
             explainer = shap.LinearExplainer(model, X_background, feature_perturbation="interventional")
@@ -179,7 +179,7 @@ elif page == "Higgs Boson Detector":
                 feature_names=X_background.columns
             ))
 
-            st.subheader("Waterfall Plot (Detailed Feature Contributions)")
+            st.subheader("Waterfall Plot (Feature Contributions)")
             fig, ax = plt.subplots()
             shap.plots.waterfall(explanation, show=False)
             st.pyplot(fig)

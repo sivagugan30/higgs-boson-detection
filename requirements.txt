@@ -1,8 +1,9 @@
-pandas
-os
 streamlit
-plotly
-base64
-scipy
+pandas
+numpy
+matplotlib
 seaborn
-sklearn
+plotly
+scipy
+joblib
+scikit-learn
