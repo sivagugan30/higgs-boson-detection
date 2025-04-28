@@ -2,3 +2,4 @@ pandas
 os
 streamlit
 plotly
+base64
