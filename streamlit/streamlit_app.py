@@ -47,13 +47,13 @@ selected_features = [
         'jet4_btag'
     ]
 
-#os.chdir("/Users/sivaguganjayachandran/PycharmProjects/higgs-boson-detection/")
+os.chdir("/Users/sivaguganjayachandran/PycharmProjects/higgs-boson-detection/")
 
-os.chdir("..")
+#os.chdir("..")
 
 st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 
-st.write(os.getcwd())
+#st.write(os.getcwd())
 
 
 conf_matrix_df = pd.read_csv('data/confusion_matrices.csv')
@@ -331,9 +331,27 @@ elif page == "Predict the Particle":
             st.write("Decision Tree")
 
             model = joblib.load('data/tree_basic.pkl')
-            individual_tree = model.estimators_[0]
+            individual_tree = model.estimators_[1]
+            # Plot the tree
             fig, ax = plt.subplots(figsize=(16, 10))
-            plot_tree(individual_tree, feature_names=features, class_names=label_names, filled=True, ax=ax)
+            plot_tree(
+                individual_tree,
+                feature_names=features,
+                class_names=label_names,
+                filled=True,
+                ax=ax,
+                fontsize=10,
+                rounded=True,
+                proportion=True,
+                precision=2,
+                impurity=False,
+                label='all'
+            )
+
+            # Force all text inside the tree to black
+            for text in ax.get_figure().findobj(match=plt.Text):
+                text.set_color("black")
+
             st.pyplot(fig)
 
             fig_rf = px.bar(
@@ -362,8 +380,26 @@ elif page == "Predict the Particle":
 
             model = joblib.load('data/tree_basic.pkl')
             individual_tree = model.estimators_[0]
+            # Plot the tree
             fig, ax = plt.subplots(figsize=(16, 10))
-            plot_tree(individual_tree, feature_names=features, class_names=label_names, filled=True, ax=ax)
+            plot_tree(
+                individual_tree,
+                feature_names=features,
+                class_names=label_names,
+                filled=True,
+                ax=ax,
+                fontsize=10,
+                rounded=True,
+                proportion=True,
+                precision=2,
+                impurity=False,
+                label='all'
+            )
+
+            # Force all text inside the tree to black
+            for text in ax.get_figure().findobj(match=plt.Text):
+                text.set_color("black")
+
             st.pyplot(fig)
 
 
