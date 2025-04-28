@@ -3,3 +3,6 @@ os
 streamlit
 plotly
 base64
+scipy
+seaborn
+sklearn
