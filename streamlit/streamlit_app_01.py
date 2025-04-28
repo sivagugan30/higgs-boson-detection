@@ -310,7 +310,8 @@ with tab3:
     st.plotly_chart(fig_var, use_container_width=True)
 
     # 5. Short Conclusion
-    st.write(f"Features identified with very low variance (< 0.01) and considered for removal: {', '.join(low_variance_features)}.")
+    st.write("Despite their low variance, features such as m_wwbb, m_wbb, and m_jjj were retained due to their high predictive power as evidenced by ANOVA and Mutual Information analyses.")
+
 
     # -------------------------------
     # Step 3.2: Scree Plot for PCA
@@ -427,6 +428,313 @@ with tab3:
 
     # 7. Small Conclusion
     st.write(f"Principal Component Analysis (PCA) was applied to reduce dimensionality, capturing 95% of the variance with the first {n_components_95} components. This selection balances accuracy and computational cost.")
+
+    # -------------------------------
+    # Step 3.3: Variance vs Mutual Information Scatter Plot
+    st.subheader("3.3 Variance vs Mutual Information Scatter Plot")
+
+
+    # Assuming you have:
+    # - X = your feature set (after dropping 'Label')
+    # - y = your target variable (Label)
+
+    from sklearn.feature_selection import mutual_info_classif
+
+    # Calculate Mutual Information
+    mutual_info = pd.Series(mutual_info_classif(X, y, discrete_features=False), index=X.columns)
+
+    # Combine into a DataFrame
+    feature_analysis = pd.DataFrame({
+        'Variance': variances,
+        'Mutual Information': mutual_info
+    })
+
+    # Create scatter plot
+    fig_scatter = px.scatter(
+        feature_analysis,
+        x='Variance',
+        y='Mutual Information',
+        text=feature_analysis.index,  # Feature names
+        title="Feature Variance vs Mutual Information",
+        labels={'Variance': 'Feature Variance', 'Mutual Information': 'Mutual Information Score'},
+        color=feature_analysis['Mutual Information'] > 0.01,  # Highlight important features
+        color_discrete_map={True: 'blue', False: 'red'}
+    )
+
+    fig_scatter.update_traces(textposition='top center')
+    fig_scatter.update_layout(
+        height=600,
+        template='plotly_white',
+        showlegend=False
+    )
+
+    st.plotly_chart(fig_scatter, use_container_width=True)
+
+    # Short Conclusion
+    st.write("Features with low variance but high Mutual Information, such as m_wwbb, m_wbb, and m_jjj, were retained as they are highly predictive despite limited variability.")
+
+    # -------------------------------
+    # Final Feature Selection Table
+    st.subheader("Final Selected Features for Modeling")
+
+    import pandas as pd
+
+    # Define the selected features and reason
+    feature_selection_table = pd.DataFrame({
+        'Feature Name': [
+            'm_bb',
+            'm_wwbb',
+            'm_jjj',
+            'missing_energy_magnitude',
+            'jet1_pt',
+            'jet2_btag',
+            'jet4_pt',
+            'lepton_pT',
+            'jet2_pt',
+            'jet3_pt',
+            'jet3_btag',
+            'm_jlv',
+            'jet4_btag'
+        ],
+        'Reason for Selection': [
+            'Top ranked in Mutual Information and ANOVA',
+            'High predictive power despite low variance',
+            'High predictive power despite low variance',
+            'Strong T-Test significance',
+            'Important kinematic measurement (T-Test)',
+            'Significant b-tag feature (T-Test)',
+            'Important physical feature (T-Test)',
+            'Lepton momentum measurement (T-Test)',
+            'Relevant secondary jet momentum (T-Test)',
+            'Relevant tertiary jet momentum (T-Test)',
+            'Tertiary jet classification feature',
+            'Derived high-level feature with high MI',
+            'Quaternary jet classification feature'
+        ]
+    })
+
+    # Display the table
+    st.dataframe(feature_selection_table, use_container_width=True)
+
+    # -------------------------------
+    # Step 4. Logistic Regression Modeling
+    st.subheader("4. Logistic Regression Modeling")
+
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    # 1. Define feature set and target
+    # Define selected features manually
+    selected_features = [
+        'm_bb',
+        'm_wwbb',
+        'm_jjj',
+        'missing_energy_magnitude',
+        'jet1_pt',
+        'jet2_btag',
+        'jet4_pt',
+        'lepton_pT',
+        'jet2_pt',
+        'jet3_pt',
+        'jet3_btag',
+        'm_jlv',
+        'jet4_btag'
+    ]
+    X = df[selected_features]
+    y = df['Label']
+
+    # 2. Train-Test Split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42, stratify=y
+    )
+
+    # 3. Feature Scaling
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    # 4. Build Logistic Regression model
+    model = LogisticRegression(max_iter=1000, random_state=42)
+    model.fit(X_train_scaled, y_train)
+
+    # 5. Make Predictions
+    y_pred = model.predict(X_test_scaled)
+
+    # 6. Evaluate Model
+    accuracy = accuracy_score(y_test, y_pred)
+    st.write(f"**Test Accuracy:** {accuracy:.4f}")
+
+    # 7. Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+
+    fig_cm, ax = plt.subplots(figsize=(6, 4))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+    ax.set_xlabel('Predicted Label')
+    ax.set_ylabel('True Label')
+    ax.set_title('Confusion Matrix')
+    st.pyplot(fig_cm)
+
+    # 8. Classification Report
+    st.text("Classification Report:")
+    st.text(classification_report(y_test, y_pred))
+
+
+    # -------------------------------
+    # Step 5. Random Forest Modeling
+    st.subheader("5. Random Forest Modeling")
+
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import plotly.express as px
+
+    # 1. Define features and target again
+    X = df[selected_features]
+    y = df['Label']
+
+    # 2. Train-Test Split (same settings for fair comparison)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42, stratify=y
+    )
+
+    # (For Random Forest, scaling is NOT necessary, but we can keep it consistent)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    # 3. Build Random Forest model
+    rf_model = RandomForestClassifier(
+        n_estimators=100,   # 100 trees
+        max_depth=None,     # Let trees grow fully
+        random_state=42,
+        n_jobs=-1           # Use all cores
+    )
+    rf_model.fit(X_train_scaled, y_train)
+
+    # 4. Make Predictions
+    y_pred_rf = rf_model.predict(X_test_scaled)
+
+    # 5. Evaluate Model
+    accuracy_rf = accuracy_score(y_test, y_pred_rf)
+    st.write(f"**Random Forest Test Accuracy:** {accuracy_rf:.4f}")
+
+    # 6. Confusion Matrix
+    cm_rf = confusion_matrix(y_test, y_pred_rf)
+
+    fig_cm_rf, ax = plt.subplots(figsize=(6, 4))
+    sns.heatmap(cm_rf, annot=True, fmt='d', cmap='Blues', ax=ax)
+    ax.set_xlabel('Predicted Label')
+    ax.set_ylabel('True Label')
+    ax.set_title('Random Forest Confusion Matrix')
+    st.pyplot(fig_cm_rf)
+
+    # 7. Classification Report
+    st.text("Random Forest Classification Report:")
+    st.text(classification_report(y_test, y_pred_rf))
+
+    # -------------------------------
+    # 8. Feature Importance Plot
+    st.subheader("Feature Importance from Random Forest")
+
+    feature_importances = pd.Series(rf_model.feature_importances_, index=selected_features).sort_values(ascending=False)
+
+    fig_importance = px.bar(
+        x=feature_importances.values,
+        y=feature_importances.index,
+        orientation='h',
+        labels={'x': 'Feature Importance', 'y': 'Feature'},
+        title="Feature Importance Ranking (Random Forest)"
+    )
+
+    fig_importance.update_layout(
+        height=600,
+        template='plotly_white'
+    )
+
+    st.plotly_chart(fig_importance, use_container_width=True)
+
+    # -------------------------------
+    # Step 7. XGBoost Modeling
+    st.subheader("7. XGBoost Modeling")
+
+    from xgboost import XGBClassifier
+    from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import plotly.express as px
+
+    # 1. Define features and target again
+    X = df[selected_features]
+    y = df['Label']
+
+    # 2. Train-Test Split (same settings for fair comparison)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42, stratify=y
+    )
+
+    # (Optional: Scaling not needed for XGBoost, but no harm if already scaled earlier)
+
+    # 3. Build XGBoost model
+    xgb_model = XGBClassifier(
+        n_estimators=100,
+        learning_rate=0.1,
+        max_depth=5,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        random_state=42,
+        use_label_encoder=False,
+        eval_metric='logloss'
+    )
+    xgb_model.fit(X_train, y_train)
+
+    # 4. Make Predictions
+    y_pred_xgb = xgb_model.predict(X_test)
+
+    # 5. Evaluate Model
+    accuracy_xgb = accuracy_score(y_test, y_pred_xgb)
+    st.write(f"**XGBoost Test Accuracy:** {accuracy_xgb:.4f}")
+
+    # 6. Confusion Matrix
+    cm_xgb = confusion_matrix(y_test, y_pred_xgb)
+
+    fig_cm_xgb, ax = plt.subplots(figsize=(6, 4))
+    sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Blues', ax=ax)
+    ax.set_xlabel('Predicted Label')
+    ax.set_ylabel('True Label')
+    ax.set_title('XGBoost Confusion Matrix')
+    st.pyplot(fig_cm_xgb)
+
+    # 7. Classification Report
+    st.text("XGBoost Classification Report:")
+    st.text(classification_report(y_test, y_pred_xgb))
+
+    # -------------------------------
+    # 8. Feature Importance Plot
+    st.subheader("Feature Importance from XGBoost")
+
+    feature_importances_xgb = pd.Series(xgb_model.feature_importances_, index=selected_features).sort_values(ascending=True)
+
+    fig_importance_xgb = px.bar(
+        x=feature_importances_xgb.values,
+        y=feature_importances_xgb.index,
+        orientation='h',
+        labels={'x': 'Feature Importance', 'y': 'Feature'},
+        title="Feature Importance Ranking (XGBoost)"
+    )
+
+    fig_importance_xgb.update_layout(
+        height=600,
+        template='plotly_white'
+    )
+
+    st.plotly_chart(fig_importance_xgb, use_container_width=True)
 
 # Use each tab properly
 with tab1:
