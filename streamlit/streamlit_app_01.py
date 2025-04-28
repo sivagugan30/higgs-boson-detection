@@ -736,6 +736,100 @@ with tab3:
 
     st.plotly_chart(fig_importance_xgb, use_container_width=True)
 
+    # -------------------------------
+    # Step 3: Deep Neural Network (DNN) Modeling
+    st.subheader("Deep Neural Network (DNN) Model")
+
+    # Required imports
+    import tensorflow as tf
+    from tensorflow.keras.models import Sequential
+    from tensorflow.keras.layers import Dense, Dropout
+    from tensorflow.keras.callbacks import EarlyStopping
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.metrics import accuracy_score, confusion_matrix
+    import plotly.figure_factory as ff
+
+    # Prepare features and labels
+    X = df[selected_features]
+    y = df['Label']
+
+    # Split into Train/Test
+    from sklearn.model_selection import train_test_split
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, stratify=y, test_size=0.2, random_state=42
+    )
+
+    # Standardize features
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    # Build the DNN model
+    model = Sequential()
+    model.add(Dense(128, activation='tanh', input_shape=(X_train_scaled.shape[1],)))
+    model.add(Dropout(0.5))
+    model.add(Dense(128, activation='tanh'))
+    model.add(Dropout(0.5))
+    model.add(Dense(64, activation='tanh'))
+    model.add(Dropout(0.5))
+    model.add(Dense(64, activation='tanh'))
+    model.add(Dropout(0.5))
+    model.add(Dense(32, activation='tanh'))
+    model.add(Dropout(0.5))
+    model.add(Dense(1, activation='sigmoid'))  # Output layer
+
+    # Compile the model
+    model.compile(
+        optimizer='adam',
+        loss='binary_crossentropy',
+        metrics=['accuracy']
+    )
+
+    # Early Stopping
+    early_stop = EarlyStopping(
+        monitor='val_loss',
+        patience=10,
+        restore_best_weights=True
+    )
+
+    # Train the model
+    history = model.fit(
+        X_train_scaled,
+        y_train,
+        validation_data=(X_test_scaled, y_test),
+        epochs=200,
+        batch_size=128,
+        callbacks=[early_stop],
+        verbose=1
+    )
+
+    # Evaluate the model
+    y_pred_probs = model.predict(X_test_scaled)
+    y_pred = (y_pred_probs > 0.5).astype(int)
+
+    # Accuracy
+    dnn_test_accuracy = accuracy_score(y_test, y_pred)
+    st.write(f"🔵 **DNN Test Accuracy:** {dnn_test_accuracy:.4f}")
+
+    # Confusion Matrix
+    conf_matrix = confusion_matrix(y_test, y_pred)
+
+    # Plot Confusion Matrix
+    z = conf_matrix
+    x = ['Predicted 0', 'Predicted 1']
+    y = ['Actual 0', 'Actual 1']
+
+    fig_cm = ff.create_annotated_heatmap(
+        z,
+        x=x,
+        y=y,
+        colorscale='Blues',
+        showscale=True
+    )
+    fig_cm.update_layout(title="Confusion Matrix for DNN", height=400)
+    st.plotly_chart(fig_cm, use_container_width=True)
+
 # Use each tab properly
 with tab1:
     st.title("Initial Data Analysis (IDA)")
