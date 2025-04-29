@@ -47,7 +47,7 @@ selected_features = [
         'jet4_btag'
     ]
 
-os.chdir("/Users/sivaguganjayachandran/PycharmProjects/higgs-boson-detection/")
+os.chdir("..")
 
 #os.chdir("..")
 
