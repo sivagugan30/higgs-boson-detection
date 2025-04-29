@@ -1,0 +1,8 @@
+1. Model Selection and Performance
+We tackled the Higgs Boson detection challenge using machine learning, starting with Logistic Regression as a baseline model. We then compared it to three advanced models: XGBoost, Random Forest, and Support Vector Machine (SVM). All novel models significantly outperformed the naive baseline across key success metrics. Random Forest achieved the highest accuracy, XGBoost offered the best precision, and SVM led in recall.
+
+2. Interactive Visualization and Prediction
+To compare model performance, we developed an interactive Streamlit app featuring radar charts, ROC curves, and confusion matrices. The ROC plots highlighted the superior performance of novel models, with larger areas under the curve than the naive model. Users can explore a “Predict the Particle” tab, input event features, choose a model, and get real-time predictions on whether an event is a Higgs signal or background noise.
+
+3. Model Explainability with SHAP
+We incorporated SHAP (SHapley Additive exPlanations) to explain individual predictions. SHAP values show how much each feature pushes a prediction toward signal or background. Force and waterfall plots visually explain these influences, identifying key features like m_bb or m_jjj. This transparency boosts trust in the model and reveals the most impactful physical variables, all without requiring deep physics knowledge.
