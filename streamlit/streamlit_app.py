@@ -56,12 +56,8 @@ st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 #st.write(os.getcwd())
 
 # Define the base directory dynamically
-BASE_DIR = Path(__file__).resolve().parent.parent  # Adjust relative to your `app` folder
-
-st.write(BASE_DIR)
-
-script_dir = Path(__file__).resolve().parent.parent
-os.chdir(script_dir)
+BASE_DIR = Path(__file__).resolve().parent.parent  # still correct
+os.chdir(BASE_DIR)  # 👈 set working dir to project root
 
 
 conf_matrix_df = pd.read_csv('data/confusion_matrices.csv')
