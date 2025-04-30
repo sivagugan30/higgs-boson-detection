@@ -1,6 +1,6 @@
 Streamlit link: https://higgs-boson-detection-01.streamlit.app/
 
-# Higgs Boson Classification Using Feature Engineering and Machine Learning
+# Higgs Boson Classification
 
 This project tackles the binary classification of Higgs boson events using simulated data from the ATLAS experiment. The primary objective is to distinguish rare signal events (presence of Higgs boson) from background noise using rigorous feature selection techniques and powerful machine learning models.
 
