@@ -332,7 +332,7 @@ elif page == "Predict the Particle":
 
             st.write("Decision Tree")
 
-            model = joblib.load('tree_basic.pkl')
+            model = joblib.load(DATA_DIR / 'tree_basic.pkl')
             individual_tree = model.estimators_[1]
             # Plot the tree
             fig, ax = plt.subplots(figsize=(16, 10))
@@ -380,7 +380,7 @@ elif page == "Predict the Particle":
             st.write("Decision Tree")
             from sklearn.tree import plot_tree
 
-            model = joblib.load('tree_basic.pkl')
+            model = joblib.load(DATA_DIR / 'tree_basic.pkl')
             individual_tree = model.estimators_[0]
             # Plot the tree
             fig, ax = plt.subplots(figsize=(16, 10))
