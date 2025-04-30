@@ -25,6 +25,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.feature_selection import mutual_info_classif, f_classif
 from scipy.stats import ttest_ind
 import shap
+import xgboost as xgb
 
 # Utilities
 import ast
