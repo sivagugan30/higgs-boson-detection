@@ -28,5 +28,3 @@ This project tackles the binary classification of Higgs boson events using simul
 ## 📈 Results
 - XGBoost outperformed all other models with superior metrics across the board.
 - Ensemble models proved effective in handling high-dimensional physics data.
-
-## 📁 Project Structure
