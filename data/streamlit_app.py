@@ -16,19 +16,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.figure_factory as ff
+import matplotlib.pyplot as plt
+import streamlit.components.v1 as components
 
 # Machine Learning
 import joblib
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.feature_selection import mutual_info_classif, f_classif
 from scipy.stats import ttest_ind
+import shap
 
 # Utilities
 import ast
-
-import shap
-import matplotlib.pyplot as plt
-import streamlit.components.v1 as components
 from pathlib import Path
 
 
@@ -51,11 +50,26 @@ selected_features = [
 
 st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 
+# Define the base directory dynamically (assuming this script is in `streamlit/`)
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / 'data'
 
-conf_matrix_df = pd.read_csv('confusion_matrices.csv')
-roc_df = pd.read_csv('roc_curves.csv')
-df_metrics = pd.read_csv('model_metrics.csv', index_col=0)
-
+# Load datasets using dynamically built paths
+conf_matrix_df = pd.read_csv(DATA_DIR / 'confusion_matrices.csv')
+roc_df = pd.read_csv(DATA_DIR / 'roc_curves.csv')
+df_metrics = pd.read_csv(DATA_DIR / 'model_metrics.csv', index_col=0)
+data = pd.read_csv(DATA_DIR / 'stratified_dataset_cleaned.csv')
+rf_df = pd.read_csv(DATA_DIR / 'random_forest_feature_importance.csv')
+xgb_df = pd.read_csv(DATA_DIR / 'xgboost_feature_importance.csv')
+corr_table = pd.read_csv(DATA_DIR / 'correlation_table.csv')
+df = pd.read_csv(DATA_DIR / 'stratified_dataset.csv')  # Final version of df
+image_path_01 = DATA_DIR / 'pic2.jpg'
+model_paths = {
+    "Logistic Regression": "logistic_regression_model.pkl",
+    "Random Forest": "random_forest_model.pkl",
+    "XGBoost": "xgboost_model.pkl",
+    "Support Vector Machine": "svm_model.pkl"
+}
 
 st.sidebar.title("Navigate")
 page = st.sidebar.radio(
@@ -93,7 +107,7 @@ def set_background(image_path):
 # Home Page
 if page == "Home":
 
-    set_background(image_path='pic2.jpg')
+    set_background(image_path= image_path_01)
 
     st.title("Higgs Boson (God Particle) Detection")
 
@@ -144,7 +158,7 @@ elif page == "What is Higgs Boson?":
 
 # Predict Higgs Boson Page
 elif page == "Predict the Particle":
-    data = pd.read_csv("stratified_dataset_cleaned.csv")
+    #data = pd.read_csv("stratified_dataset_cleaned.csv")
     st.markdown("## Higgs Boson Detector: Predict the Unknown!")
 
     st.write("")
@@ -189,14 +203,6 @@ elif page == "Predict the Particle":
     st.markdown("### Select Machine Learning Model")
     model_choice = st.selectbox("Choose a model:",
                                 ("Logistic Regression", "Random Forest", "XGBoost", "Support Vector Machine"))
-
-    # Load models
-    model_paths = {
-        "Logistic Regression": "logistic_regression_model.pkl",
-        "Random Forest": "random_forest_model.pkl",
-        "XGBoost": "xgboost_model.pkl",
-        "Support Vector Machine": "svm_model.pkl"
-    }
 
     st.write("---")
 
@@ -319,7 +325,7 @@ elif page == "Predict the Particle":
             st.pyplot(fig)
 
         elif model_choice == "Random Forest":
-            rf_df = pd.read_csv('random_forest_feature_importance.csv')
+            #rf_df = pd.read_csv('random_forest_feature_importance.csv')
 
             #st.subheader("Heading")
             from sklearn.tree import plot_tree
@@ -399,7 +405,7 @@ elif page == "Predict the Particle":
             st.pyplot(fig)
 
 
-            xgb_df = pd.read_csv('xgboost_feature_importance.csv')
+            #xgb_df = pd.read_csv('xgboost_feature_importance.csv')
 
             fig_xgb = px.bar(
                 xgb_df.sort_values('Importance', ascending=True),
@@ -429,8 +435,7 @@ elif page == "Predict the Particle":
 # Documentation Page
 elif page == "Documentation":
 
-    file_path = 'stratified_dataset_cleaned.csv'
-    df = pd.read_csv(file_path)
+    #df = pd.read_csv('stratified_dataset_cleaned.csv')
 
     # Correct way: create actual tab objects
     tab1, tab2, tab3 = st.tabs(['Data Overview', 'Feature Selection', 'Model Results'])
@@ -440,7 +445,7 @@ elif page == "Documentation":
 
         # Step 1: Load cleaned correlation table
         file_path = 'correlation_table.csv'
-        corr_table = pd.read_csv(file_path)
+        #corr_table = pd.read_csv('correlation_table.csv')
 
         # Step 2: Prepare full correlation matrix for heatmap
         # (No deduplication here to keep symmetric matrix)
@@ -1001,9 +1006,7 @@ elif page == "Documentation":
         # Display First 10 Rows of Dataset
         # Load the stratified 30k dataset
 
-        file_path = 'stratified_dataset.csv'
-
-        df = pd.read_csv(file_path)
+        #df = pd.read_csv('stratified_dataset.csv')
 
         # Section: First 10 Rows
         st.subheader("Data table")
@@ -1017,8 +1020,7 @@ elif page == "Documentation":
         full_values = [0.52992, 0.47008]
 
         # Sampled Dataset (30k rows) proportions (calculated from df)
-        file_path = 'stratified_dataset.csv'
-        df = pd.read_csv(file_path)
+        #df = pd.read_csv('stratified_dataset.csv')
 
         sampled_counts = df['Label'].value_counts(normalize=True).sort_index()
         sampled_labels = ['Background (0)', 'Signal (1)']
