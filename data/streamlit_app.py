@@ -52,10 +52,10 @@ st.set_page_config(page_title="Higgs Boson Detection", layout="wide")
 
 # Define the base directory dynamically (assuming this script is in `streamlit/`)
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / 'data'
+DATA_DIR = BASE_DIR / "data"
 
 # Load datasets using dynamically built paths
-conf_matrix_df = pd.read_csv(DATA_DIR / 'confusion_matrices.csv')
+conf_matrix_df = pd.read_csv(BASE_DIR / "data" / "confusion_matrices.csv")
 roc_df = pd.read_csv(DATA_DIR / 'roc_curves.csv')
 df_metrics = pd.read_csv(DATA_DIR / 'model_metrics.csv', index_col=0)
 data = pd.read_csv(DATA_DIR / 'stratified_dataset_cleaned.csv')
