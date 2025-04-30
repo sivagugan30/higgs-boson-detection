@@ -65,10 +65,10 @@ corr_table = pd.read_csv(DATA_DIR / 'correlation_table.csv')
 df = pd.read_csv(DATA_DIR / 'stratified_dataset.csv')  # Final version of df
 image_path_01 = DATA_DIR / 'pic2.jpg'
 model_paths = {
-    "Logistic Regression": "logistic_regression_model.pkl",
-    "Random Forest": "random_forest_model.pkl",
-    "XGBoost": "xgboost_model.pkl",
-    "Support Vector Machine": "svm_model.pkl"
+    "Logistic Regression": DATA_DIR / "logistic_regression_model.pkl",
+    "Random Forest": DATA_DIR / "random_forest_model.pkl",
+    "XGBoost": DATA_DIR / "xgboost_model.pkl",
+    "Support Vector Machine": DATA_DIR / "svm_model.pkl"
 }
 
 st.sidebar.title("Navigate")
