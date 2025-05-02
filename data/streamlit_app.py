@@ -129,6 +129,7 @@ elif page == "Introduction":
 
     - **Feedback:** Share your thoughts and suggestions to help improve the Project experience.
 
+    
     Navigate the Project using the sidebar, and immerse yourself in the exciting world of particle physics!
     """)
 
