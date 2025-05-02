@@ -111,6 +111,7 @@ if page == "Home":
     set_background(image_path= image_path_01)
 
     st.title("Higgs Boson (God Particle) Detection")
+    st.markdown("<h1 style='color: white;'>Higgs Boson (God Particle) Detection</h1>", unsafe_allow_html=True)
 
 # Instructions Page
 elif page == "Instructions":
