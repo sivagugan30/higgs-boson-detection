@@ -119,17 +119,15 @@ elif page == "Introduction":
     ### About the Project:
     This Project is about exploring the Higgs Boson particle, offering insights through interactive visualizations, scientific explanations, and predictive models.
 
-    ### Sections:
+    ## Sections:
 
     - **What is Higgs Boson?:** Discover the scientific significance of the Higgs Boson and its role in particle physics.
 
-    - **Predict the Particle:** Run predictions on particle data to determine the presence of the Higgs Boson using a trained model.
-
     - **Documentation:** Dive into the technical details, data sources, and methodologies used in the model.
 
-    - **Feedback:** Share your thoughts and suggestions to help improve the Project experience.
+    - **Predict the Particle:** Run predictions on particle data to determine the presence of the Higgs Boson using a trained model.
 
-    - **Home:** Overview of the Higgs Boson Project and what you can explore.
+    - **Feedback:** Share your thoughts and suggestions to help improve the Project experience.
 
     Navigate the Project using the sidebar, and immerse yourself in the exciting world of particle physics!
     """)
