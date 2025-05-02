@@ -268,7 +268,7 @@ elif page == "Predict the Particle":
         if prediction == 1:
             st.success("")
             st.markdown(
-                "<h3 style='text-align: center; color: white;'>Higgs Boson Event Identified</h3>",
+                "<h3 style='text-align: center;'>Higgs Boson Event Identified</h3>",
                 unsafe_allow_html=True
             )
             st.success("")
