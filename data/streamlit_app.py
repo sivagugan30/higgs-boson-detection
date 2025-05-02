@@ -77,7 +77,7 @@ page = st.sidebar.radio(
     "Select a Section",
     [
         "Home",
-        "Instructions",
+        "Introduction",
         "What is Higgs Boson?",
         "Documentation",
         "Predict the Particle",
@@ -114,7 +114,7 @@ if page == "Home":
     st.markdown("<h1 style='color: white;'>Higgs Boson (God Particle) Detection</h1>", unsafe_allow_html=True)
 
 # Instructions Page
-elif page == "Instructions":
+elif page == "Introduction":
     st.write("""
     ### About the Project:
     This Project is your ultimate companion for exploring the Higgs Boson particle, offering insights through interactive visualizations, scientific explanations, and predictive models.
