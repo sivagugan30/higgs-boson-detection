@@ -119,7 +119,7 @@ elif page == "Introduction":
     ### About the Project:
     This Project is about exploring the Higgs Boson particle, offering insights through interactive visualizations, scientific explanations, and predictive models.
 
-    ## Sections:
+    ### Sections:
 
     - **What is Higgs Boson?:** Discover the scientific significance of the Higgs Boson and its role in particle physics.
 
