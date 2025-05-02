@@ -117,7 +117,7 @@ if page == "Home":
 elif page == "Introduction":
     st.write("""
     ### About the Project:
-    This Project is your ultimate companion for exploring the Higgs Boson particle, offering insights through interactive visualizations, scientific explanations, and predictive models.
+    This Project is about exploring the Higgs Boson particle, offering insights through interactive visualizations, scientific explanations, and predictive models.
 
     ### Sections:
 
